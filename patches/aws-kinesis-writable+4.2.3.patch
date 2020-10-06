@@ -1,0 +1,98 @@
+diff --git a/node_modules/aws-kinesis-writable/.eslintrc.json b/node_modules/aws-kinesis-writable/.eslintrc.json
+old mode 100644
+new mode 100755
+diff --git a/node_modules/aws-kinesis-writable/CHANGELOG.md b/node_modules/aws-kinesis-writable/CHANGELOG.md
+old mode 100644
+new mode 100755
+diff --git a/node_modules/aws-kinesis-writable/LICENSE b/node_modules/aws-kinesis-writable/LICENSE
+old mode 100644
+new mode 100755
+diff --git a/node_modules/aws-kinesis-writable/README.md b/node_modules/aws-kinesis-writable/README.md
+old mode 100644
+new mode 100755
+diff --git a/node_modules/aws-kinesis-writable/index.js b/node_modules/aws-kinesis-writable/index.js
+old mode 100644
+new mode 100755
+index bbac35c..ffeb232
+--- a/node_modules/aws-kinesis-writable/index.js
++++ b/node_modules/aws-kinesis-writable/index.js
+@@ -5,7 +5,7 @@ const Writable = require('stream').Writable;
+ const retry = require('retry');
+ const AWS = require('aws-sdk');
+ const merge = require('lodash.merge');
+-const safeStringify = require('fast-safe-stringify')
++// const safeStringify = require('fast-safe-stringify')
+ 
+ /**
+  * [KinesisStream description]
+@@ -56,22 +56,43 @@ function KinesisStream (params) {
+ 
+   this.hasPriority = this.buffer.isPrioritaryMsg || this.buffer.hasPriority;
+ 
+-  // increase the timeout to get credentials from the EC2 Metadata Service
+-  AWS.config.credentials = new AWS.EC2MetadataCredentials({
+-    httpOptions: { timeout: 5000 }
+-  });
+-
+   this.recordsQueue = [];
+ 
+-  this.kinesis = params.kinesis || new AWS.Kinesis({
+-    accessKeyId: params.accessKeyId,
+-    secretAccessKey: params.secretAccessKey,
+-    sessionToken: params.sessionToken,
+-    credentials: params.credentials,
+-    region: params.region,
+-    endpoint: params.endpoint,
+-    objectMode: params.objectMode,
+-    httpOptions: params.httpOptions
++  if (params.credentialSource == 'FederatedIdentity') {
++
++    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
++      IdentityPoolId: params.identityPoolId
++    });
++    AWS.config.region = 'us-east-1';
++
++    this.kinesis = new AWS.Kinesis({
++      apiVersion: '2013-12-02'
++    });
++  } else {
++
++    AWS.config.credentials = new AWS.EC2MetadataCredentials({
++      httpOptions: { timeout: 5000 }
++    });
++
++    this.kinesis = params.kinesis || new AWS.Kinesis({
++      accessKeyId: params.accessKeyId,
++      secretAccessKey: params.secretAccessKey,
++      sessionToken: params.sessionToken,
++      credentials: params.credentials,
++      region: params.region,
++      endpoint: params.endpoint,
++      objectMode: params.objectMode,
++      httpOptions: params.httpOptions
++    });
++  }
++
++  AWS.config.credentials.get(err => {
++    // attach event listener
++    if (err) {
++      alert('Error retrieving credentials.');
++      console.error(err);
++      return;
++    }
+   });
+ 
+   Writable.call(this, { objectMode: params.objectMode });
+@@ -123,7 +144,8 @@ KinesisStream.prototype.dispatch = function(records, cb) {
+     const partitionKey = typeof this.partitionKey === 'function'
+       ? this.partitionKey(record)
+       : this.partitionKey;
+-    return { Data: safeStringify(record), PartitionKey: partitionKey };
++    // Patch, see https://github.com/jupyter-widgets/ipywidgets/issues/2594 for more details
++    return { Data: JSON.stringify(record), PartitionKey: partitionKey };
+   });
+ 
+   operation.attempt(() => {
+diff --git a/node_modules/aws-kinesis-writable/test/index.js b/node_modules/aws-kinesis-writable/test/index.js
+old mode 100644
+new mode 100755
