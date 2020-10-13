@@ -1,0 +1,25 @@
+{
+    "title": "jupyterlab-log",
+    "description": "Settings of the jupyterlab log plugin.",
+    "type": "object",
+    "properties": {
+      "kinesisStreamName": {
+        "type": "string",
+        "title": "Kinesis stream name",
+        "description": "This is the name of the Kinesis stream.",
+        "default": "mentoracademy"
+      },
+      "nameOfLogs": {
+        "type": "string",
+        "title": "Name of the logs",
+        "description": "This is the name of the logs that can be filtered in AWS Kinesis Data Firehose.",
+        "default": "April Jupyter Event Logging"
+      },
+      "identityPoolId": {
+        "type": "string",
+        "title": "the identity pool id",
+        "description": "This is the identity pool of AWS Cognito of the Kinesis stream.",
+        "default": "us-east-1:f09d7f65-e395-4aad-a04a-dbb8b0b2f549"
+      }
+    }
+  }

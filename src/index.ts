@@ -4,6 +4,7 @@ import {
 } from '@jupyterlab/application';
 
 import { INotebookTracker } from '@jupyterlab/notebook';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import {
   OnActiveCellChangedEvent,
   OnCurrentWidgetChangedEvent,
@@ -18,6 +19,10 @@ import {
 } from './jupyterevent';
 import KinesisWritable from 'aws-kinesis-writable';
 import { createLogger, INFO, ConsoleRawStream } from 'browser-bunyan';
+// import { Menu } from '@lumino/widgets';
+
+
+const PLUGIN_ID = 'jupyterlab-log:settings-log';
 
 const getUsernameForConfig = () => {
   //EFFECTS: retrieve username from url
@@ -29,27 +34,19 @@ const getUsernameForConfig = () => {
   }
 }
 
-const temp_config = {
-  jupyter_logging: {
-    nameOfLogs: 'April Jupyter Event Logging',
-    kinesisStreamName: 'mentoracademy',
-    identityPoolId: 'us-east-1:f09d7f65-e395-4aad-a04a-dbb8b0b2f549',
-  }
-}
-
-const jupyterLogger = () => {
+const jupyterLogger = (config: any) => {
   const consoleStream = new ConsoleRawStream();
 
   const kinesisWritableStream = new KinesisWritable({
     credentialSource: 'FederatedIdentity',
-    identityPoolId: temp_config.jupyter_logging.identityPoolId,
-    streamName: temp_config.jupyter_logging.kinesisStreamName,
+    identityPoolId: config.jupyter_logging.identityPoolId,
+    streamName: config.jupyter_logging.kinesisStreamName,
     objectMode: true
   });
 
 
   const bunyan_setup = {
-    name: temp_config.jupyter_logging.nameOfLogs,
+    name: config.jupyter_logging.nameOfLogs,
     username: getUsernameForConfig(),
     window_location: window.location.href,
     streams: [
@@ -68,12 +65,9 @@ const jupyterLogger = () => {
   return logger;
 }
 
-
-const activateLog = (
-  app: JupyterFrontEnd,
-  nbtracker: INotebookTracker
-) => {
-  const logger = jupyterLogger();
+const initLogger = (config: any, nbtracker: INotebookTracker) => {
+  // Activate the log
+  const logger = jupyterLogger(config);
   logger.info('JupyterLab extension jupyterlab-log is activated!');
 
   const logRecord = (event: any) => {
@@ -98,13 +92,60 @@ const activateLog = (
   });
 }
 
+
+const activateLog = (
+  app: JupyterFrontEnd,
+  nbtracker: INotebookTracker,
+  settingRegistry: ISettingRegistry,
+) => {
+  let nameOfLogs = 'April Jupyter Event Logging';
+  let kinesisStreamName = 'mentoracademy';
+  let identityPoolId = 'us-east-1:f09d7f65-e395-4aad-a04a-dbb8b0b2f549';
+
+  /**
+     * Load the settings for this extension
+     *
+     * @param setting Extension settings
+     */
+  function loadSetting(setting: ISettingRegistry.ISettings): void {
+    // Read the settings and convert to the correct type
+    nameOfLogs = setting.get('nameOfLogs').composite as string;
+    kinesisStreamName = setting.get('kinesisStreamName').composite as string;
+    identityPoolId = setting.get('identityPoolId').composite as string;
+  }
+  Promise.all([app.restored, settingRegistry.load(PLUGIN_ID)])
+    .then(([, setting]) => {
+      // Read the settings
+      loadSetting(setting);
+
+      // Listen for your plugin setting changes using Signal
+      setting.changed.connect(loadSetting);
+
+      const config = {
+        jupyter_logging: {
+          nameOfLogs,
+          kinesisStreamName,
+          identityPoolId,
+        }
+      }
+
+      initLogger(config, nbtracker)
+    })
+    .catch(reason => {
+      console.error(
+        `Something went wrong when reading the settings.\n${reason}`
+      );
+    });
+
+}
+
 /**
  * Initialization data for the jupyterlab_log extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: 'jupyterlab-log',
+  id: PLUGIN_ID,
   autoStart: true,
-  requires: [INotebookTracker],
+  requires: [INotebookTracker, ISettingRegistry],
   activate: activateLog
 };
 
