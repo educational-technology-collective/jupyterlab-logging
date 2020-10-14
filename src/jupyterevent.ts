@@ -70,7 +70,7 @@ export class OnCurrentWidgetChangedEvent extends JupyterEvent {
     }
 }
 
-export class onCellExecutedEvent extends JupyterEvent {
+export class OnCellExecutedEvent extends JupyterEvent {
     tracker: INotebookTracker;
     name: string = 'FinishExecuteCellEvent';
     constructor(nbtracker: INotebookTracker) {
@@ -93,9 +93,9 @@ export class onCellExecutedEvent extends JupyterEvent {
     }
 }
 
-export class onCellInsertedEvent extends JupyterEvent {
+export class OnCellInsertedEvent extends JupyterEvent {
     tracker: INotebookTracker;
-    name: string = 'onCellInserted';
+    name: string = 'CellInsertedEvent';
     oldFunc: any;
     constructor(nbtracker: INotebookTracker) {
         super();
@@ -125,9 +125,9 @@ export class onCellInsertedEvent extends JupyterEvent {
     };
 }
 
-export class onCellCutEvent extends JupyterEvent {
+export class OnCellCutEvent extends JupyterEvent {
     tracker: INotebookTracker;
-    name: string = 'onCellCut';
+    name: string = 'CellCutEvent';
     oldFunc: any;
     constructor(nbtracker: INotebookTracker) {
         super();
@@ -157,9 +157,9 @@ export class onCellCutEvent extends JupyterEvent {
     };
 }
 
-export class onCellCopyEvent extends JupyterEvent {
+export class OnCellCopyEvent extends JupyterEvent {
     tracker: INotebookTracker;
-    name: string = 'onCellCopy';
+    name: string = 'CellCopyEvent';
     oldFunc: any;
     constructor(nbtracker: INotebookTracker) {
         super();
@@ -190,9 +190,9 @@ export class onCellCopyEvent extends JupyterEvent {
 }
 
 
-export class onCellPasteEvent extends JupyterEvent {
+export class OnCellPasteEvent extends JupyterEvent {
     tracker: INotebookTracker;
-    name: string = 'onCellPaste';
+    name: string = 'CellPasteEvent';
     oldFunc: any;
     constructor(nbtracker: INotebookTracker) {
         super();
@@ -222,9 +222,9 @@ export class onCellPasteEvent extends JupyterEvent {
     };
 }
 
-export class onCellTypeChangeEvent extends JupyterEvent {
+export class OnCellTypeChangeEvent extends JupyterEvent {
     tracker: INotebookTracker;
-    name: string = 'onCellTypeChange';
+    name: string = 'CellTypeChangeEvent';
     oldFunc: any;
     constructor(nbtracker: INotebookTracker) {
         super();
@@ -254,8 +254,8 @@ export class onCellTypeChangeEvent extends JupyterEvent {
     };
 }
 
-export class onRunAllEvent extends JupyterEvent {
-    name: string = 'onRunAll';
+export class OnRunAllEvent extends JupyterEvent {
+    name: string = 'RunAllEvent';
     oldFunc: any;
     constructor() {
         super();
@@ -276,9 +276,9 @@ export class onRunAllEvent extends JupyterEvent {
     };
 }
 
-export class onRunAndAdvanceEvent extends JupyterEvent {
+export class OnRunAndAdvanceEvent extends JupyterEvent {
     tracker: INotebookTracker;
-    name: string = 'onRunAndAdvance';
+    name: string = 'RunAndAdvanceEvent';
     oldFunc: any;
     constructor(nbtracker: INotebookTracker) {
         super();

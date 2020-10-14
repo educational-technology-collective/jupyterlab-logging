@@ -8,19 +8,17 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import {
   OnActiveCellChangedEvent,
   OnCurrentWidgetChangedEvent,
-  onCellExecutedEvent,
-  onCellInsertedEvent,
-  onCellCutEvent,
-  onCellCopyEvent,
-  onCellPasteEvent,
-  onCellTypeChangeEvent,
-  onRunAllEvent,
-  onRunAndAdvanceEvent
+  OnCellExecutedEvent,
+  OnCellInsertedEvent,
+  OnCellCutEvent,
+  OnCellCopyEvent,
+  OnCellPasteEvent,
+  OnCellTypeChangeEvent,
+  OnRunAllEvent,
+  OnRunAndAdvanceEvent
 } from './jupyterevent';
 import KinesisWritable from 'aws-kinesis-writable';
 import { createLogger, INFO, ConsoleRawStream } from 'browser-bunyan';
-// import { Menu } from '@lumino/widgets';
-
 
 const PLUGIN_ID = 'jupyterlab-log:settings-log';
 
@@ -77,18 +75,19 @@ const initLogger = (config: any, nbtracker: INotebookTracker) => {
   const jupyterEventsToLog = [
     new OnActiveCellChangedEvent(nbtracker),
     new OnCurrentWidgetChangedEvent(nbtracker),
-    new onCellExecutedEvent(nbtracker),
-    new onCellInsertedEvent(nbtracker),
-    new onCellCutEvent(nbtracker),
-    new onCellPasteEvent(nbtracker),
-    new onCellCopyEvent(nbtracker),
-    new onCellTypeChangeEvent(nbtracker),
-    new onRunAllEvent(),
-    new onRunAndAdvanceEvent(nbtracker)
+    new OnCellExecutedEvent(nbtracker),
+    new OnCellInsertedEvent(nbtracker),
+    new OnCellCutEvent(nbtracker),
+    new OnCellPasteEvent(nbtracker),
+    new OnCellCopyEvent(nbtracker),
+    new OnCellTypeChangeEvent(nbtracker),
+    new OnRunAllEvent(),
+    new OnRunAndAdvanceEvent(nbtracker)
   ];
 
   jupyterEventsToLog.forEach((jupyterEvent) => {
-    document.addEventListener(jupyterEvent.name, logRecord, false);
+    if (config.eventList[jupyterEvent.name]) 
+      document.addEventListener(jupyterEvent.name, logRecord, false);
   });
 }
 
@@ -101,7 +100,18 @@ const activateLog = (
   let nameOfLogs = 'April Jupyter Event Logging';
   let kinesisStreamName = 'mentoracademy';
   let identityPoolId = 'us-east-1:f09d7f65-e395-4aad-a04a-dbb8b0b2f549';
-
+  let eventList: any = {
+    'ChangeCellsInViewEvent': true, 
+    'OpenNotebookEvent': true,
+    'FinishExecuteCellEvent': true,
+    'CellInsertedEvent': true,
+    'CellCutEvent': true,
+    'CellCopyEvent': true,
+    'CellPasteEvent': true,
+    'RunAllEvent': true,
+    'RunAndAdvanceEvent': true,
+    'CellTypeChangeEvent': true
+  }
   /**
      * Load the settings for this extension
      *
@@ -112,7 +122,12 @@ const activateLog = (
     nameOfLogs = setting.get('nameOfLogs').composite as string;
     kinesisStreamName = setting.get('kinesisStreamName').composite as string;
     identityPoolId = setting.get('identityPoolId').composite as string;
+    for(const eventname in eventList) {
+      let flag = setting.get(eventname).composite as boolean;
+      eventList[eventname] = flag;
+    }
   }
+  // Load the settings after the notebook is ready
   Promise.all([app.restored, settingRegistry.load(PLUGIN_ID)])
     .then(([, setting]) => {
       // Read the settings
@@ -126,12 +141,14 @@ const activateLog = (
           nameOfLogs,
           kinesisStreamName,
           identityPoolId,
-        }
+        },
+        eventList
       }
 
       initLogger(config, nbtracker)
     })
     .catch(reason => {
+      console.log(reason)
       console.error(
         `Something went wrong when reading the settings.\n${reason}`
       );

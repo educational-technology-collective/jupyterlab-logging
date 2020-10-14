@@ -17,9 +17,69 @@
       },
       "identityPoolId": {
         "type": "string",
-        "title": "the identity pool id",
+        "title": "The identity pool id",
         "description": "This is the identity pool of AWS Cognito of the Kinesis stream.",
         "default": "us-east-1:f09d7f65-e395-4aad-a04a-dbb8b0b2f549"
+      },
+      "ChangeCellsInViewEvent": {
+        "type": "boolean",
+        "title": "Enable the active cell change event",
+        "description": "This is the button to turn on or off the active cell change listener",
+        "default": true
+      },
+      "OpenNotebookEvent": {
+        "type": "boolean",
+        "title": "Enable the notebook switch event",
+        "description": "This is the button to turn on or off the current notebook change listener",
+        "default": true
+      },
+      "FinishExecuteCellEvent": {
+        "type": "boolean",
+        "title": "Enable the finishing cell execution event",
+        "description": "This is the button to turn on or off the finishing cell execution listener",
+        "default": true
+      },
+      "CellInsertedEvent": {
+        "type": "boolean",
+        "title": "Enable the cell insert event",
+        "description": "This is the button to turn on or off the cell insert event listener",
+        "default": true
+      },
+      "CellCutEvent": {
+        "type": "boolean",
+        "title": "Enable the cell cut event",
+        "description": "This is the button to turn on or off the cell cut event listener",
+        "default": true
+      },
+      "CellCopyEvent": {
+        "type": "boolean",
+        "title": "Enable the cell copy event",
+        "description": "This is the button to turn on or off the cell copy event listener",
+        "default": true
+      },
+      "CellPasteEvent": {
+        "type": "boolean",
+        "title": "Enable the cell paste event",
+        "description": "This is the button to turn on or off the cell paste event listener",
+        "default": true
+      },
+      "RunAllEvent": {
+        "type": "boolean",
+        "title": "Enable the cell run all event",
+        "description": "This is the button to turn on or off the cell run all event listener",
+        "default": true
+      },
+      "RunAndAdvanceEvent": {
+        "type": "boolean",
+        "title": "Enable the cell run and advance event",
+        "description": "This is the button to turn on or off the cell run and advance event listener",
+        "default": true
+      },
+      "CellTypeChangeEvent": {
+        "type": "boolean",
+        "title": "Enable the cell type change event",
+        "description": "This is the button to turn on or off the cell type change event listener",
+        "default": true
       }
     }
   }
