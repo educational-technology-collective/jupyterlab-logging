@@ -160,7 +160,7 @@ const activateLog = (
 }
 
 /**
- * Initialization data for the jupyterlab_log extension.
+ * Initialization data for the jupyterlab_logging extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,

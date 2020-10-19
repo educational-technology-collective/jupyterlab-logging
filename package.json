@@ -1,5 +1,5 @@
 {
-  "name": "jupyterlab-log",
+  "name": "jupyterlab-logging",
   "version": "0.1.0",
   "description": "Log user events for JupyterLab",
   "keywords": [
@@ -27,6 +27,8 @@
   },
   "scripts": {
     "build": "tsc",
+    "build:labextension": "cd jupyterlab_logging && rimraf labextension && mkdirp labextension && cd labextension && npm pack ../..",
+    "build:all": "jlpm run build:labextension",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
@@ -59,7 +61,6 @@
   ],
   "jupyterlab": {
     "extension": true,
-    "schemaDir": "schema",
-    "outputDir": "jupyterlab_log/static"
+    "schemaDir": "schema"
   }
 }
