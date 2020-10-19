@@ -1,0 +1,8 @@
+name: jupyterlab-logging
+channels:
+- conda-forge
+dependencies:
+- nodejs
+- python=3
+- yarn
+- jupyterlab=2
