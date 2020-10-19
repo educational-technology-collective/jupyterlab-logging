@@ -1,4 +1,4 @@
-# jupyterlab_log
+# jupyterlab_logging
 
 ![Github Actions Status](https://github.com/LittleAprilFool/jupyterlab_logging.git/workflows/Build/badge.svg)
 
@@ -13,7 +13,7 @@ Log user events for JupyterLab
 ## Install
 
 ```bash
-jupyter labextension install jupyterlab-log
+jupyter labextension install jupyterlab-logging
 ```
 
 ## Contributing
@@ -26,7 +26,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Move to jupyterlab_log directory
+# Move to jupyterlab_logging directory
 
 # Install dependencies
 jlpm
@@ -55,5 +55,5 @@ Now every change will be built locally and bundled into JupyterLab. Be sure to r
 
 ```bash
 
-jupyter labextension uninstall jupyterlab-log
+jupyter labextension uninstall jupyterlab-logging
 ```
