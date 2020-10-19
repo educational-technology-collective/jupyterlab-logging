@@ -3,6 +3,8 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
+import { requestAPI } from './jlabserverconn';
+
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import {
@@ -22,17 +24,7 @@ import { createLogger, INFO, ConsoleRawStream } from 'browser-bunyan';
 
 const PLUGIN_ID = 'jupyterlab-log:settings-log';
 
-const getUsernameForConfig = () => {
-  //EFFECTS: retrieve username from url
-  if (window.location.href.split("/")[2].substring(0, 9) == "localhost") {
-    return "localhost";
-  } else {
-    //return window.location.href.split("/")[4];
-    return window.location.href.split("/")[2].split(".")[0];
-  }
-}
-
-const jupyterLogger = (config: any) => {
+const jupyterLogger = (config: any, user:any) => {
   const consoleStream = new ConsoleRawStream();
 
   const kinesisWritableStream = new KinesisWritable({
@@ -45,7 +37,7 @@ const jupyterLogger = (config: any) => {
 
   const bunyan_setup = {
     name: config.jupyter_logging.nameOfLogs,
-    username: getUsernameForConfig(),
+    username: user.workspace_id,
     window_location: window.location.href,
     streams: [
       {
@@ -63,10 +55,19 @@ const jupyterLogger = (config: any) => {
   return logger;
 }
 
-const initLogger = (config: any, nbtracker: INotebookTracker) => {
+const initLogger = async(config: any, nbtracker: INotebookTracker) => {
   // Activate the log
-  const logger = jupyterLogger(config);
-  logger.info('JupyterLab extension jupyterlab-log is activated!');
+
+  let user: any = {"workspace_id": "undefined"};
+  // get the server side username
+  try {
+    user = await requestAPI<any>('id');
+    // console.log(user.workspace_id);
+  } catch (reason) {
+    console.error(`Error on GET /jupyterlab_logging/id.\n${reason}`);
+  }
+
+  const logger = jupyterLogger(config, user);
 
   const logRecord = (event: any) => {
     logger.info(event.detail)
@@ -89,6 +90,8 @@ const initLogger = (config: any, nbtracker: INotebookTracker) => {
     if (config.eventList[jupyterEvent.name]) 
       document.addEventListener(jupyterEvent.name, logRecord, false);
   });
+
+  logger.info('JupyterLab extension jupyterlab_logging is activated!');
 }
 
 
