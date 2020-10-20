@@ -22,7 +22,7 @@ import {
 import KinesisWritable from 'aws-kinesis-writable';
 import { createLogger, INFO, ConsoleRawStream } from 'browser-bunyan';
 
-const PLUGIN_ID = 'jupyterlab-log:settings-log';
+const PLUGIN_ID = 'jupyterlab-logging:settings-log';
 
 const jupyterLogger = (config: any, user:any) => {
   const consoleStream = new ConsoleRawStream();
