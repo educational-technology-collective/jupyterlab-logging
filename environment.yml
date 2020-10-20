@@ -6,3 +6,4 @@ dependencies:
 - python=3
 - yarn
 - jupyterlab=2
+- conda-build

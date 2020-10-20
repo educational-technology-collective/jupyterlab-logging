@@ -1,0 +1,39 @@
+
+{% set version = "0.1.0" %}
+
+package:
+  name: jupyterlab_logging
+  version: {{ version }}
+
+source:
+  path: ../
+  # url: https://pypi.io/packages/source/r/jupyter_logging/jupyter_logging-{{ version }}.tar.gz
+  # sha256: TBD
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - python
+    - jupyterlab >=2.0.0,<3.0.0
+    - jupyter-packaging
+    - yarn
+  run:
+    - python
+    - jupyterlab >=2.0.0,<3.0.0
+    - yarn
+
+test:
+  imports:
+    - jupyterlab_logging
+
+about:
+  home: https://github.com/educational-technology-collective/jupyterlab-logging
+  # license: BSD 3-Clause
+  # license_family: BSD
+  # license_file: LICENSE.md
+  summary: Log user events in Jupyter Lab
+  # description: TBD  
+  # doc_url: TBD

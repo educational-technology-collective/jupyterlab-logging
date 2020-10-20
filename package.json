@@ -14,6 +14,7 @@
   "license": "BSD-3-Clause",
   "author": "April Wang",
   "files": [
+    "aws-kinesis-writable/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "schema/**/*.json",
     "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
