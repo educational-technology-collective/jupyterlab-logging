@@ -1,5 +1,5 @@
 {
-    "title": "jupyterlab-log",
+    "title": "jupyterlab-logging",
     "description": "Settings of the jupyterlab log plugin.",
     "type": "object",
     "properties": {
