@@ -1,4 +1,6 @@
 import { INotebookTracker, NotebookActions } from "@jupyterlab/notebook";
+import { CodeCell, MarkdownCell } from '@jupyterlab/cells';
+
 /**
  Defines the JupyterEvent class.
  */
@@ -306,4 +308,91 @@ export class OnRunAndAdvanceEvent extends JupyterEvent {
     release = () => {
         NotebookActions.runAndAdvance = this.oldFunc;
     };
+}
+
+
+export class OnSaveEvent extends JupyterEvent {
+    tracker: INotebookTracker;
+    notebook: any;
+    name: string = 'SaveEvent';
+    content: string;
+    constructor(nbtracker: INotebookTracker) {
+        super();
+        this.tracker = nbtracker;
+        const current_widget = this.tracker.currentWidget;
+        current_widget.context.saveState.connect(this.onSave, this);
+        this.tracker.currentChanged.connect(this.onEventCalled, this);
+    }
+
+    onEventCalled = () => {
+        const current_widget = this.tracker.currentWidget;
+        current_widget.context.saveState.connect(this.onSave, this);
+    }
+
+    onSave = () => {
+        this.notebook = this.tracker.currentWidget.content;
+        let notebook_json = []
+        
+        for (let cell of this.notebook.widgets) {
+            let cell_json = {
+               "cell_type": "null",
+               "source":[] as any 
+            }
+            if (cell instanceof CodeCell) {
+                cell_json.cell_type = "code",
+                cell_json.source.push((cell.editor as any).doc?.getValue())
+            }
+            if (cell instanceof MarkdownCell) {
+                cell_json.cell_type = "markdown",
+                cell_json.source.push((cell.editor as any).doc?.getValue())
+            }
+            notebook_json.push(cell_json)
+        }
+        const details = {
+            notebook_content: notebook_json
+        };
+        JupyterEvent.prototype.dispatchJupyterEvent(this.name, details);
+    }
+
+    release = () => {
+
+    }
+}
+
+export class OnScrollEvent extends JupyterEvent {
+    tracker: INotebookTracker;
+    name: string = 'ScrollEvent';
+    constructor(nbtracker: INotebookTracker) {
+        super();
+        this.tracker = nbtracker;
+        this.tracker.currentWidget.content.node.addEventListener('scroll', this.onScroll)
+        this.tracker.currentChanged.connect(this.onEventCalled, this);
+    }
+    onEventCalled = () => { 
+        this.tracker.currentWidget.content.node.addEventListener('scroll', this.onScroll)
+    }
+
+    onScroll = () => {
+        const view_top = this.tracker.currentWidget.content.node.scrollTop
+        const view_bottom = this.tracker.currentWidget.content.node.scrollTop + this.tracker.currentWidget.content.node.offsetHeight
+        let cell_list = []
+
+        const notebook = this.tracker.currentWidget.content;
+        let index = 0
+        for (let cell of notebook.widgets) {
+            const cell_top = cell.node.offsetTop;
+            const cell_bottom = cell.node.offsetTop + cell.node.offsetHeight;
+            if(cell_top > view_bottom || cell_bottom < view_top) {
+                index ++;
+                continue;
+            }
+            cell_list.push(index)
+            index ++;
+        }
+        const details = {
+            cell_list
+        };
+        JupyterEvent.prototype.dispatchJupyterEvent(this.name, details);
+
+    }
 }

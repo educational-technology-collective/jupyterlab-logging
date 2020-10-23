@@ -13,7 +13,7 @@
         "type": "string",
         "title": "Name of the logs",
         "description": "This is the name of the logs that can be filtered in AWS Kinesis Data Firehose.",
-        "default": "April Jupyter Event Logging"
+        "default": "MADS Jupyter Event Logging"
       },
       "identityPoolId": {
         "type": "string",
@@ -79,6 +79,18 @@
         "type": "boolean",
         "title": "Enable the cell type change event",
         "description": "This is the button to turn on or off the cell type change event listener",
+        "default": true
+      },
+      "SaveEvent": {
+        "type": "boolean",
+        "title": "Enable the notebook save event",
+        "description": "This is the button to turn on or off the notebook save event listener",
+        "default": true
+      },
+      "ScrollEvent": {
+        "type": "boolean",
+        "title": "Enable the notebook scroll event",
+        "description": "This is the button to turn on or off the notebook scroll event listener",
         "default": true
       }
     }
