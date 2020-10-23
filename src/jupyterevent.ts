@@ -320,13 +320,13 @@ export class OnSaveEvent extends JupyterEvent {
         super();
         this.tracker = nbtracker;
         const current_widget = this.tracker.currentWidget;
-        current_widget.context.saveState.connect(this.onSave, this);
+        current_widget.context?.saveState.connect(this.onSave, this);
         this.tracker.currentChanged.connect(this.onEventCalled, this);
     }
 
     onEventCalled = () => {
         const current_widget = this.tracker.currentWidget;
-        current_widget.context.saveState.connect(this.onSave, this);
+        current_widget.context?.saveState.connect(this.onSave, this);
     }
 
     onSave = () => {
