@@ -319,18 +319,16 @@ export class OnSaveEvent extends JupyterEvent {
     constructor(nbtracker: INotebookTracker) {
         super();
         this.tracker = nbtracker;
-        const current_widget = this.tracker.currentWidget;
-        current_widget.context?.saveState.connect(this.onSave, this);
+        this.tracker.currentWidget?.context.saveState.connect(this.onSave, this);
         this.tracker.currentChanged.connect(this.onEventCalled, this);
     }
 
     onEventCalled = () => {
-        const current_widget = this.tracker.currentWidget;
-        current_widget.context?.saveState.connect(this.onSave, this);
+        this.tracker.currentWidget?.context.saveState.connect(this.onSave, this);
     }
 
     onSave = () => {
-        this.notebook = this.tracker.currentWidget.content;
+        this.notebook = this.tracker.currentWidget?.content;
         let notebook_json = []
         
         for (let cell of this.notebook.widgets) {
@@ -365,11 +363,11 @@ export class OnScrollEvent extends JupyterEvent {
     constructor(nbtracker: INotebookTracker) {
         super();
         this.tracker = nbtracker;
-        this.tracker.currentWidget.content.node.addEventListener('scroll', this.onScroll)
+        this.tracker.currentWidget?.content.node.addEventListener('scroll', this.onScroll)
         this.tracker.currentChanged.connect(this.onEventCalled, this);
     }
     onEventCalled = () => { 
-        this.tracker.currentWidget.content.node.addEventListener('scroll', this.onScroll)
+        this.tracker.currentWidget?.content.node.addEventListener('scroll', this.onScroll)
     }
 
     onScroll = () => {
