@@ -7,6 +7,7 @@ import { requestAPI } from './jlabserverconn';
 
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+
 import {
   OnActiveCellChangedEvent,
   OnCurrentWidgetChangedEvent,
@@ -17,7 +18,9 @@ import {
   OnCellPasteEvent,
   OnCellTypeChangeEvent,
   OnRunAllEvent,
-  OnRunAndAdvanceEvent
+  OnRunAndAdvanceEvent,
+  OnSaveEvent,
+  OnScrollEvent
 } from './jupyterevent';
 import KinesisWritable from 'aws-kinesis-writable';
 import { createLogger, INFO, ConsoleRawStream } from 'browser-bunyan';
@@ -83,7 +86,9 @@ const initLogger = async(config: any, nbtracker: INotebookTracker) => {
     new OnCellCopyEvent(nbtracker),
     new OnCellTypeChangeEvent(nbtracker),
     new OnRunAllEvent(),
-    new OnRunAndAdvanceEvent(nbtracker)
+    new OnRunAndAdvanceEvent(nbtracker),
+    new OnSaveEvent(nbtracker),
+    new OnScrollEvent(nbtracker)
   ];
 
   jupyterEventsToLog.forEach((jupyterEvent) => {
@@ -113,7 +118,9 @@ const activateLog = (
     'CellPasteEvent': true,
     'RunAllEvent': true,
     'RunAndAdvanceEvent': true,
-    'CellTypeChangeEvent': true
+    'CellTypeChangeEvent': true,
+    'SaveEvent': true,
+    'ScrollEvent': true
   }
   /**
      * Load the settings for this extension
